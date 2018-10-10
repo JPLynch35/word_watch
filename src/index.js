@@ -1,10 +1,9 @@
 import $ from 'jquery'
 
 $(document).ready(() => {
-  getTopWord()
+  getTopWord();
+  $(`#submit-btn`).click(sendWords);
 });
-
-$(`#button`).click(sendWords($(`#text-area`)).innerHTML);
 
 const getTopWord = () => {
   fetch(`https://wordwatch-api.herokuapp.com/api/v1/top_word`)
@@ -17,9 +16,21 @@ const displayWord = (word) => {
   $(`.word-count`).html(`${Object.keys(word.word)}: ${Object.values(word.word)}`)
 };
 
-const sendWords = (text) => {
-  debugger;
+const sendWords = () => {
+  const text = $(`#text-area`).val();
+  refreshTextAreas();
+  text.split(" ").forEach(word => {
+    fetch(`https://wordwatch-api.herokuapp.com/api/v1/words`, {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(
+        { word: { value: `${word}` } }
+      )
+    })
+  });
+  getTopWord()
 };
 
-const seperateWords = (text) => {
+const refreshTextAreas = () => {
+  $(`#text-area`).val('')
 };
